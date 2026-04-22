@@ -1,0 +1,17 @@
+
+
+services:
+  somagom-dev:
+    image: node:20-alpine
+    container_name: somagom-dev-container
+    working_dir: /app
+    # This line is the magic fix - it bypasses the firewall error
+    network_mode: "host" 
+    volumes:
+      - .:/app
+    environment:
+      - WATCHPACK_POLLING=true
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+# Note: The 'ports' and 'networks' sections are removed 
+# because host mode handles this automatically.
