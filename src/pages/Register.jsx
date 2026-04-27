@@ -71,35 +71,20 @@ export default function Register() {
       }
     });
 
-  } catch (err) {
-  if (!err.response) {
-    setError("Network error. Check your connection.");
-  } else {
-    const data = err.response.data;
+  } catch (error) {
+    const data = error.response?.data;
 
     if (typeof data === 'string') {
-      setError(data);
+        setError('An account with this email already exists.');
     } else if (data?.email) {
-      setError(`Email: ${Array.isArray(data.email) ? data.email[0] : data.email}`);
-    } else if (data?.username) {
-      // ✅ username error means email already registered
-      setError("An account with this email already exists.");
-    } else if (data?.password1) {
-      setError(`Password: ${Array.isArray(data.password1) ? data.password1[0] : data.password1}`);
-    } else if (data?.password2) {
-      setError(`Password: ${Array.isArray(data.password2) ? data.password2[0] : data.password2}`);
+        setError(data.email[0]);
     } else if (data?.non_field_errors) {
-      setError(Array.isArray(data.non_field_errors) ? data.non_field_errors[0] : data.non_field_errors);
-    } else if (data?.detail) {
-      setError(data.detail);
+        setError(data.non_field_errors[0]);
     } else {
-      // ✅ show all errors if nothing matched
-      const allErrors = Object.entries(data)
-        .map(([key, val]) => `${Array.isArray(val) ? val[0] : val}`)
-        .join(' ');
-      setError(allErrors || "Registration failed. Try again.");
+        setError('Registration failed. Please try again.');
     }
-  }
+    
+    setLoading(false); 
 }
 };
 
@@ -108,7 +93,7 @@ export default function Register() {
   const backendUrl =
     import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-  window.location.href = `${backendUrl}/accounts/${provider}/login/`;
+  window.location.href = `${backendUrl}/api/accounts/${provider}/login/`;
 };
 
   return (
