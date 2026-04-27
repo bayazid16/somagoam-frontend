@@ -109,7 +109,7 @@ export default function Login() {
 
   const handleSocialLogin = (provider) => {
     const backendUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-    window.location.href = `${backendUrl}/accounts/${provider}/login/`;
+    window.location.href = `${backendUrl}/api/accounts/${provider}/login/`;
   };
 
   return (
