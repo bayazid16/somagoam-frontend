@@ -41,11 +41,11 @@ export default function Home() {
 
   if (loading) return <LoadingScreen />;
 
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center text-stone-500">
-      <p>{error}</p>
-    </div>
-  );
+  // if (error) return (
+  //   <div className="min-h-screen flex items-center justify-center text-stone-500">
+  //     <p>{error}</p>
+  //   </div>
+  // );
 
   const fashionProducts = products.filter(p => p.category_name === 'fashions' || p.category_name === 'clothing');
   const foodProducts = products.filter(p => p.category_name === 'foods' || p.category_name === 'food');
