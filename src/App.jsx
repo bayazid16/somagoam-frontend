@@ -1,6 +1,6 @@
-import { useState } from 'react'; // Added useState for Cart management
+import { useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Header from "./components/Header"; // Import the new Header
+import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import Footer from "./components/Footer";
@@ -20,16 +20,14 @@ import UserDashboard from "./pages/UserDashboard";
 import Reviews from "./pages/Reviews";
 import SearchResults from './pages/SearchResults';
 import SocialCallback from './components/SocialCallback';
-import Cart from "./components/Cart"; // Ensure Cart is imported here
-
-import PrivateRoute from "./components/PrivateRoute"; // Import the gatekeeper
+import Cart from "./components/Cart";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const location = useLocation();
-  const [isCartOpen, setIsCartOpen] = useState(false); // State to control Cart overlay
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Logic for hiding Layout (Header/Navbar/Footer)
   const hideLayout = 
     location.pathname === '/login' || 
     location.pathname === '/register' ||
@@ -38,23 +36,30 @@ function App() {
     location.pathname === '/payment/cancel';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9F7F2] pb-16 md:pb-0"> {/* Padding bottom for mobile nav */}
+    <div className="min-h-screen flex flex-col bg-[#F9F7F2]">
+      
+      {/* 
+          NAVIGATION AREA
+          'sticky top-0' is better than 'fixed' here because it stays at the top 
+          but still occupies space in the layout, preventing the "Hero sliding under" issue.
+      */}
       {!hideLayout && (
-        <>
+        <div className="sticky top-0 left-0 w-full z-[100] bg-[#F9F7F2] border-b border-stone-200">
           <Header 
             setIsCartOpen={setIsCartOpen} 
             toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
           />
-          {/* Hide Navbar on mobile if using Bottom Nav, or keep for categories */}
-          <div className="hidden md:block">
-            <Navbar />
-          </div>
-        </>
+          <Navbar />
+        </div>
       )}
       
-      <div className="flex-grow">
+      {/* 
+          MAIN CONTENT
+          No extra padding-top needed because 'sticky' keeps the nav in the document flow.
+          pb-16 ensures content doesn't get hidden by the mobile bottom nav.
+      */}
+      <div className="flex-grow pb-16 md:pb-0">
         <Routes>
-          {/* Public Routes */}
           <Route path="/social-callback" element={<SocialCallback />} />
           <Route path="/" element={<Home />} />
           <Route path="/fashion" element={<Fashion />} />
@@ -67,8 +72,6 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/search" element={<SearchResults />} />
           
-
-          {/* Protected Routes - Wrapped in PrivateRoute */}
           <Route 
             path="/checkout" 
             element={
@@ -94,12 +97,10 @@ function App() {
             } 
           />
 
-          {/* Payment Routes */}
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/fail" element={<PaymentCancel />} />
           <Route path="/payment/cancel" element={<PaymentCancel />} />
 
-          {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
@@ -111,7 +112,6 @@ function App() {
         </>
       )}
 
-      {/* Global Cart Overlay */}
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );

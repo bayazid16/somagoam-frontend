@@ -14,59 +14,101 @@ import LoadingScreen from "../components/LoadingScreen";
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Bug 1 fixed
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchProducts = async () => {
       try {
         const response = await axiosInstance.get('/api/products/products/', {
           signal: controller.signal
         });
-        setProducts(response.data.results ?? response.data); //  Bug 3 fixed
+        setProducts(response.data.results ?? response.data); 
       } catch (err) {
-        if (err.name !== 'CanceledError') { //  Bug 2 fixed
-          console.error("Error:", err);
+        if (err.name !== 'CanceledError') { 
           setError("Failed to load products.");
         }
       } finally {
         setTimeout(() => setLoading(false), 1200);
       }
     };
-
     fetchProducts();
     return () => controller.abort();
   }, []);
 
   if (loading) return <LoadingScreen />;
 
-  // if (error) return (
-  //   <div className="min-h-screen flex items-center justify-center text-stone-500">
-  //     <p>{error}</p>
-  //   </div>
-  // );
+  // Categorization Logic
+  const fashionProducts = products.filter(p => p.category_name?.toLowerCase().includes('fashion'));
+  const foodProducts = products.filter(p => p.category_name?.toLowerCase().includes('food'));
+  const craftsProducts = products.filter(p => p.category_name?.toLowerCase().includes('craft'));
 
-  const fashionProducts = products.filter(p => p.category_name === 'fashions' || p.category_name === 'clothing');
-  const foodProducts = products.filter(p => p.category_name === 'foods' || p.category_name === 'food');
-  const craftsProducts = products.filter(p => p.category_name === 'crafts' || p.category_name === 'handicraft');
+  // Header Component for the specific look in your image
+  const SectionHeader = ({ title, highlight }) => (
+    <div className="mb-8 border-b border-stone-200 pb-2">
+      <h2 className="text-2xl md:text-3xl serif tracking-tight text-stone-800">
+        {title} <span className="text-[#A33B26]">{highlight}</span>
+      </h2>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#F9F7F2] animate-in fade-in duration-1000">
+      
+      {/* 1. HERO */}
       <Hero />
-      <Features />
-      {products.length > 0 && <Highlights items={products.slice(0, 3)} />}
-      <section id="fashion-preview">
-        {fashionProducts.length > 0 ? <Fashion products={fashionProducts} /> : <div className="py-20"><NoProducts category="Heritage Fashion" /></div>}
-      </section>
-      <section id="food-preview">
-        {foodProducts.length > 0 ? <Food products={foodProducts} /> : <div className="py-20"><NoProducts category="GI Food" /></div>}
-      </section>
-      <section id="crafts-preview">
-        {craftsProducts.length > 0 ? <Crafts products={craftsProducts} /> : <div className="py-20"><NoProducts category="Artisanal Crafts" /></div>}
-      </section>
-      <Stats />
-      <About />
+
+      {/* 2. HIGHLIGHTS (Immediately after Hero) */}
+      {products.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 md:px-10">
+            <SectionHeader title="Weekly" highlight="Highlights" />
+            <Highlights items={products.slice(0, 3)} />
+          </div>
+        </section>
+      )}
+
+      {/* 3. PRODUCT CATEGORIES */}
+      <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-20">
+        
+        {/* FASHION */}
+        <section id="fashion-preview">
+          <SectionHeader title="Traditional" highlight="Heritage Fashion" />
+          {fashionProducts.length > 0 ? (
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                <Fashion products={fashionProducts} />
+             </div>
+          ) : <NoProducts category="Fashion" />}
+        </section>
+
+        {/* FOOD */}
+        <section id="food-preview">
+          <SectionHeader title="Traditional" highlight="GI Food" />
+          {foodProducts.length > 0 ? (
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                <Food products={foodProducts} />
+             </div>
+          ) : <NoProducts category="Food" />}
+        </section>
+
+        {/* CRAFTS */}
+        <section id="crafts-preview">
+          <SectionHeader title="Handmade" highlight="Artisanal Crafts" />
+          {craftsProducts.length > 0 ? (
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                <Crafts products={craftsProducts} />
+             </div>
+          ) : <NoProducts category="Crafts" />}
+        </section>
+      </div>
+
+      {/* 4. REMAINING SECTIONS */}
+      <div className="border-t border-stone-200">
+        <Features />
+        <About />
+        <Stats />
+      </div>
+
     </div>
   );
 }
