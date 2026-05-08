@@ -105,8 +105,9 @@ export default function Home() {
       {/* 4. REMAINING SECTIONS */}
       <div className="border-t border-stone-200">
         <Features />
-        <About />
         <Stats />
+        <About />
+        <Highlights />
       </div>
 
     </div>
