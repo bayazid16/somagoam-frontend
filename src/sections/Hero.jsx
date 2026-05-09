@@ -16,17 +16,9 @@ import hero1 from '../assets/artistic_hand.jpg';
 import hero2 from '../assets/hero-2.jpg'; 
 import hero3 from '../assets/bamboo_craft.jpeg'; 
 import hero4 from '../assets/hero-4.jpg'; 
-import hero5 from '../assets/map_2.jpg'; 
+import hero5 from '../assets/craft_story.jpg'; 
 
 const slideData = [
-  {
-    title: "HERITAGE",
-    subtitle: "AND TRADITION",
-    desc: "ঐতিহ্য এখন আপনার ঘরের দুয়ারে",
-    link: "/fashion",
-    btnText: "Shop Fashion",
-    img: hero1
-  },
   {
     title: "PURE GI",
     subtitle: "FOOD & FLAVOR",
@@ -34,6 +26,14 @@ const slideData = [
     link: "/food",
     btnText: "Explore Food",
     img: hero2
+  },
+  {
+    title: "HERITAGE",
+    subtitle: "AND TRADITION",
+    desc: "ঐতিহ্য এখন আপনার ঘরের দুয়ারে",
+    link: "/fashion",
+    btnText: "Shop Fashion",
+    img: hero1
   },
   {
     title: "EXQUISITE",
