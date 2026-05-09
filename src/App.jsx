@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Header from "./components/Header";
-import Navbar from "./components/Navbar";
+// Header is removed because the new Navbar handles everything
+import Navbar from "./components/Navbar"; 
 import MobileBottomNav from "./components/MobileBottomNav";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -26,8 +26,8 @@ import PrivateRoute from "./components/PrivateRoute";
 function App() {
   const location = useLocation();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Define pages where we don't want the Navbar or Footer to show
   const hideLayout = 
     location.pathname === '/login' || 
     location.pathname === '/register' ||
@@ -39,26 +39,20 @@ function App() {
     <div className="min-h-screen flex flex-col bg-[#F9F7F2]">
       
       {/* 
-          NAVIGATION AREA
-          'sticky top-0' is better than 'fixed' here because it stays at the top 
-          but still occupies space in the layout, preventing the "Hero sliding under" issue.
+          FIX 1: REMOVED <Header />
+          The new Navbar.jsx now contains the Logo, Hamburger, and Search.
+          Rendering both was causing the "double header" in your screenshot.
       */}
       {!hideLayout && (
-        <div className="sticky top-0 left-0 w-full z-[100] bg-[#F9F7F2] border-b border-stone-200">
-          <Header 
-            setIsCartOpen={setIsCartOpen} 
-            toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-          />
-          <Navbar />
-        </div>
+        <Navbar setIsCartOpen={setIsCartOpen} />
       )}
       
       {/* 
-          MAIN CONTENT
-          No extra padding-top needed because 'sticky' keeps the nav in the document flow.
-          pb-16 ensures content doesn't get hidden by the mobile bottom nav.
+          FIX 2: REMOVED EXTRA PADDING/MARGIN
+          The flex-grow div handles the main content area.
+          The 'pb-16' ensures content isn't covered by the mobile bottom navigation.
       */}
-      <div className="flex-grow pb-16 md:pb-0">
+      <main className="flex-grow pb-16 md:pb-0">
         <Routes>
           <Route path="/social-callback" element={<SocialCallback />} />
           <Route path="/" element={<Home />} />
@@ -103,7 +97,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </div>
+      </main>
 
       {!hideLayout && (
         <>
@@ -112,6 +106,7 @@ function App() {
         </>
       )}
 
+      {/* Side drawer cart component */}
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );

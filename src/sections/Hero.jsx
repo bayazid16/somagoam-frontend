@@ -11,7 +11,6 @@ import 'swiper/css/effect-fade';
 // Import required modules
 import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
 
-
 import hero1 from '../assets/artistic_hand.jpg'; 
 import hero2 from '../assets/hero-2.jpg'; 
 import hero3 from '../assets/bamboo_craft.jpeg'; 
@@ -63,7 +62,11 @@ const slideData = [
 
 export default function Hero() {
   return (
-    <section className="hero-section relative w-full overflow-hidden">
+    /* 
+       Added 'w-screen' and 'relative left-1/2 -translate-x-1/2' 
+       to break out of any parent padding and reach the screen edges.
+    */
+    <section className="hero-section relative w-screen left-1/2 -translate-x-1/2 overflow-hidden bg-black">
       <Swiper
         spaceBetween={0}
         effect={'fade'}
@@ -77,7 +80,8 @@ export default function Hero() {
         }}
         navigation={true}
         modules={[Autoplay, Pagination, Navigation, EffectFade]}
-        className="mySwiper h-[65vh] sm:h-[70vh] md:h-[85vh] w-full"
+        /* Increased mobile height to 75vh to fill the visual gap */
+        className="mySwiper h-[75vh] sm:h-[70vh] md:h-[85vh] w-full"
       >
         {slideData.map((slide, index) => (
           <SwiperSlide key={index} className="w-full">
@@ -90,8 +94,7 @@ export default function Hero() {
                 backgroundRepeat: 'no-repeat'
               }}
             >
-              {/* Text Container with minimal mobile padding */}
-              <div className="w-full max-w-5xl text-center z-10 px-4 md:px-6 animate-in fade-in zoom-in duration-1000">
+              <div className="w-full max-w-5xl text-center z-10 px-4 md:px-6">
                 <h1 className="text-4xl sm:text-5xl md:text-8xl serif leading-[1.1] mb-3 md:mb-6 text-white uppercase tracking-tighter">
                   {slide.title} <br /> 
                   <span className="italic font-light opacity-90 text-[#C5A059]">{slide.subtitle}</span>
@@ -105,13 +108,13 @@ export default function Hero() {
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-6">
                   <Link 
                     to={slide.link}
-                    className="brand-bg text-white w-56 sm:w-auto px-8 py-3 md:px-10 md:py-4 text-[11px] md:text-xs uppercase font-bold tracking-widest hover:opacity-90 transition shadow-xl"
+                    className="bg-[#A33B26] text-white w-56 sm:w-auto px-8 py-3 md:px-10 md:py-4 text-[11px] md:text-xs uppercase font-bold tracking-widest hover:opacity-90 transition shadow-xl text-center"
                   >
                     {slide.btnText}
                   </Link>
                   <Link 
                     to="/about" 
-                    className="bg-white/10 backdrop-blur-md border border-white/30 text-white w-56 sm:w-auto px-8 py-3 md:px-10 md:py-4 text-[11px] md:text-xs uppercase font-bold tracking-widest hover:bg-white hover:text-black transition"
+                    className="bg-white/10 backdrop-blur-md border border-white/30 text-white w-56 sm:w-auto px-8 py-3 md:px-10 md:py-4 text-[11px] md:text-xs uppercase font-bold tracking-widest hover:bg-white hover:text-black transition text-center"
                   >
                     Our Legacy
                   </Link>
@@ -122,22 +125,22 @@ export default function Hero() {
         ))}
       </Swiper>
       
-      {/* Custom Styles */}
       <style jsx="true" global="true">{`
-        /* Remove default swiper container padding */
-        .swiper { padding: 0 !important; }
+        /* Crucial: Zero out all margins and padding for the slider */
+        .swiper { 
+          padding: 0 !important; 
+          margin: 0 !important;
+        }
         
         .swiper-button-next, .swiper-button-prev { 
           color: white !important; 
           transform: scale(0.5); 
         }
         
-        /* Hide arrows on mobile to maximize space */
         @media (max-width: 768px) {
           .swiper-button-next, .swiper-button-prev { display: none !important; }
         }
         
-        /* Pagination Dots Styling */
         .swiper-pagination { bottom: 15px !important; }
         .swiper-pagination-bullet { background: white !important; opacity: 0.5; width: 8px; height: 8px; }
         .swiper-pagination-bullet-active { background: #A33B26 !important; opacity: 1; scale: 1.2; }
