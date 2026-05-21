@@ -17,6 +17,7 @@ export default function Header({ setIsCartOpen, toggleMobileMenu }) {
   const handleSearch = (e) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
     }
   };
 
@@ -50,6 +51,10 @@ export default function Header({ setIsCartOpen, toggleMobileMenu }) {
 
           {/* 3. Search (Desktop Only) */}
           <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md mx-8 relative">
+            
+            
+           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={14} />
+            
             <input
               type="text"
               placeholder="Search heritage..."
@@ -58,7 +63,11 @@ export default function Header({ setIsCartOpen, toggleMobileMenu }) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
             />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={14} />
+
+            <button onClick={() => setIsSearchOpen(false)} className="p-2 hover:rotate-90 transition-transform duration-300">
+            <X size={30} className="text-stone-500" />
+          </button>
+            
           </div>
 
           {/* 4. Actions */}
