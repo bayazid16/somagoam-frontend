@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Menu, X, Search, Heart, ShoppingBag, User } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 export default function Navbar({ setIsCartOpen }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cartItems } = useCart();
+
+  // Dynamically calculate total quantities across all different items in the cart
+  const totalCartQuantity = cartItems.reduce((acc, item) => acc + (item.qty || 1), 0);
 
   const links = [
     { name: 'Home', path: '/' },
@@ -16,8 +21,7 @@ export default function Navbar({ setIsCartOpen }) {
 
   return (
     <header className="bg-[#F9F7F2] border-b border-stone-200 w-full sticky top-0 z-[100]">
-      {/* 
-         MAIN HEADER ROW 
+      {/* MAIN HEADER ROW 
       */}
       <div className="max-w-7xl mx-auto px-4 h-16 md:h-24 flex justify-between items-center relative">
         
@@ -72,7 +76,12 @@ export default function Navbar({ setIsCartOpen }) {
             className="relative hover:text-[#A33B26] transition-colors"
           >
             <ShoppingBag size={22} />
-            <span className="absolute -top-2 -right-2 bg-[#A33B26] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">2</span>
+            {/* Show badge only when items exist */}
+            {totalCartQuantity > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#A33B26] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                {totalCartQuantity}
+              </span>
+            )}
           </button>
           <Link to="/dashboard" className="hover:text-[#A33B26] transition-colors">
             <User size={22} />

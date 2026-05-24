@@ -12,12 +12,14 @@ export default function Cart({ isOpen, onClose }) {
   const handleCheckout = () => {
     onClose();
     if (!isLoggedIn) {
-      //  redirect to login if not logged in
       navigate('/login');
     } else {
       navigate('/checkout');
     }
   };
+
+  // Safe helper calculation for item count inside the sidebar header
+  const totalItemCount = cartItems.reduce((acc, item) => acc + (item.qty || 1), 0);
 
   if (!isOpen) return null;
 
@@ -32,11 +34,11 @@ export default function Cart({ isOpen, onClose }) {
         {/* Header */}
         <div className="p-6 border-b border-stone-200 flex justify-between items-center bg-white">
           <h2 className="serif text-2xl flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 brand-color" />
+            <ShoppingBag className="w-5 h-5 text-[#A33B26]" />
             Your Collection
             {cartItems.length > 0 && (
               <span className="text-sm font-sans text-stone-400 font-normal">
-                ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
+                ({totalItemCount} {totalItemCount === 1 ? 'item' : 'items'})
               </span>
             )}
           </h2>
@@ -54,7 +56,7 @@ export default function Cart({ isOpen, onClose }) {
               <p className="text-xs uppercase tracking-widest">Add some heritage items to start</p>
               <button
                 onClick={() => { onClose(); navigate('/'); }}
-                className="mt-6 brand-bg text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition"
+                className="mt-6 bg-[#A33B26] text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition"
               >
                 Explore Heritage
               </button>
@@ -70,7 +72,7 @@ export default function Cart({ isOpen, onClose }) {
                       src={item.image || item.img}
                       alt={item.name}
                       className="w-full h-full object-cover"
-                      onError={(e) => { e.target.style.display = 'none'; }} // hide broken images
+                      onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-stone-300">
@@ -82,7 +84,6 @@ export default function Cart({ isOpen, onClose }) {
                 <div className="flex-grow">
                   <div className="flex justify-between items-start">
                     <h4 className="font-bold text-sm text-stone-800 pr-2">{item.name}</h4>
-                    {/* remove entire item from cart */}
                     <button
                       onClick={() => removeFromCart(item.id || item.name)}
                       className="text-stone-300 hover:text-red-500 transition flex-shrink-0"
@@ -99,23 +100,31 @@ export default function Cart({ isOpen, onClose }) {
                     {/* Quantity Controls */}
                     <div className="flex items-center border border-stone-200 bg-white">
                       <button
-                        onClick={() => updateQuantity(item.id || item.name, item.qty - 1)}
+                        onClick={() => {
+                          const targetId = item.id || item.name;
+                          const currentQty = item.qty || 1;
+                          if (currentQty <= 1) {
+                            removeFromCart(targetId);
+                          } else {
+                            updateQuantity(targetId, currentQty - 1);
+                          }
+                        }}
                         className="px-3 py-1 text-sm hover:text-[#A33B26] hover:bg-stone-50 transition"
                       >
                         −
                       </button>
                       <span className="px-3 text-xs font-bold border-x border-stone-200 py-1">
-                        {item.qty}
+                        {item.qty || 1}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.id || item.name, item.qty + 1)}
+                        onClick={() => updateQuantity(item.id || item.name, (item.qty || 1) + 1)}
                         className="px-3 py-1 text-sm hover:text-[#A33B26] hover:bg-stone-50 transition"
                       >
                         +
                       </button>
                     </div>
                     <span className="text-sm font-bold text-stone-900">
-                      ৳ {(item.price * item.qty).toLocaleString()}
+                      ৳ {((item.price || 0) * (item.qty || 1)).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -129,7 +138,7 @@ export default function Cart({ isOpen, onClose }) {
           <div className="p-6 bg-white border-t border-stone-200 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-stone-500 text-sm italic">Subtotal</span>
-              <span className="text-xl font-bold brand-color">
+              <span className="text-xl font-bold text-[#A33B26]">
                 ৳ {cartTotal.toLocaleString()}
               </span>
             </div>
@@ -138,7 +147,6 @@ export default function Cart({ isOpen, onClose }) {
               Shipping calculated at checkout
             </p>
 
-            {/*  show login prompt if not logged in */}
             {!isLoggedIn ? (
               <div className="space-y-2">
                 <p className="text-[10px] text-center text-amber-600 font-bold uppercase tracking-widest">
@@ -154,7 +162,7 @@ export default function Cart({ isOpen, onClose }) {
             ) : (
               <button
                 onClick={handleCheckout}
-                className="w-full brand-bg text-white py-4 text-xs font-bold uppercase tracking-widest hover:opacity-90 transition"
+                className="w-full bg-[#A33B26] text-white py-4 text-xs font-bold uppercase tracking-widest hover:opacity-90 transition"
               >
                 Proceed to Checkout
               </button>
