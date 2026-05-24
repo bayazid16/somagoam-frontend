@@ -58,15 +58,7 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero />
 
-      {/* 2. HIGHLIGHTS (Immediately after Hero) */}
-      {products.length > 0 && (
-        <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 md:px-10">
-            <SectionHeader title="Weekly" highlight="Highlights" />
-            <Highlights items={products.slice(0, 3)} />
-          </div>
-        </section>
-      )}
+      
 
       {/* 3. PRODUCT CATEGORIES */}
       <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-20">
