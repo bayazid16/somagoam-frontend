@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link ,useNavigate} from 'react-router-dom';
 import { Menu, X, Search, Heart, ShoppingBag, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 export default function Navbar({ setIsCartOpen }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');  
+  const navigate = useNavigate();       
   const { cartItems } = useCart();
 
   // Dynamically calculate total quantities across all different items in the cart
   const totalCartQuantity = cartItems.reduce((acc, item) => acc + (item.qty || 1), 0);
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   const links = [
     { name: 'Home', path: '/' },
@@ -61,6 +70,9 @@ export default function Navbar({ setIsCartOpen }) {
               type="text" 
               placeholder="Search heritage fashion, food..." 
               className="w-full bg-white border border-stone-200 py-2.5 pl-10 pr-4 text-sm rounded-sm focus:outline-none focus:border-[#A33B26] placeholder:text-stone-400"
+              value={searchQuery}                              
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              onKeyDown={handleSearch}     
             />
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
           </div>
@@ -96,6 +108,9 @@ export default function Navbar({ setIsCartOpen }) {
             type="text" 
             placeholder="Search heritage fashion, food..." 
             className="w-full bg-white border border-stone-200 py-2.5 pl-10 pr-4 text-xs rounded-sm focus:outline-none focus:border-[#A33B26]"
+            value={searchQuery}                              
+            onChange={(e) => setSearchQuery(e.target.value)} 
+            onKeyDown={handleSearch}     
           />
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
         </div>
