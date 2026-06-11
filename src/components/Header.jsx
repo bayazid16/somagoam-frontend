@@ -64,9 +64,7 @@ export default function Header({ setIsCartOpen, toggleMobileMenu }) {
               onKeyDown={handleSearch}
             />
 
-            <button onClick={() => setIsSearchOpen(false)} className="p-2 hover:rotate-90 transition-transform duration-300">
-            <X size={30} className="text-stone-500" />
-          </button>
+            
             
           </div>
 
