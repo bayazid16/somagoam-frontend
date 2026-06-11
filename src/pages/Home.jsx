@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Added for "See More" navigation
 import axiosInstance from '../api/axiosInstance';
-// import Hero from "../sections/Hero";
+import Hero from "../sections/Hero";
 import Features from "../sections/Features";
 import Highlights from "../sections/Highlights";
 import Fashion from "../sections/Fashion";
@@ -63,6 +63,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F9F7F2] animate-in fade-in duration-1000">
+      </Hero>
     
       
       <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-20">
