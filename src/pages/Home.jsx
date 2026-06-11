@@ -63,14 +63,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F9F7F2] animate-in fade-in duration-1000">
-      </Hero>
-    
+      <Hero />
       
       <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-20">
         
         {/* FASHION */}
         <section id="fashion-preview">
-          <SectionHeader title="Traditional" highlight="Heritage Fashion" linkTo="/category/2" />
+          <SectionHeader title="Traditional" highlight="Heritage Fashion" linkTo="/category/fashion" />
           {fashionProducts.length > 0 ? (
              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                 {/* Ensure your <Fashion /> component maps over the props! */}
@@ -81,7 +80,7 @@ export default function Home() {
 
         {/* FOOD */}
         <section id="food-preview">
-          <SectionHeader title="Traditional" highlight="GI Food" linkTo="/category/3" />
+          <SectionHeader title="Traditional" highlight="GI Food" linkTo="/category/food" />
           {foodProducts.length > 0 ? (
              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                 <Food products={foodProducts} />
@@ -91,7 +90,7 @@ export default function Home() {
 
         {/* CRAFTS */}
         <section id="crafts-preview">
-          <SectionHeader title="Handmade" highlight="Artisanal Crafts" linkTo="/category/4" />
+          <SectionHeader title="Handmade" highlight="Artisanal Crafts" linkTo="/category/crafts" />
           {craftsProducts.length > 0 ? (
              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                 <Crafts products={craftsProducts} />
