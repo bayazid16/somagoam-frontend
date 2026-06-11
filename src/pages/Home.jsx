@@ -115,7 +115,7 @@ export default function Home() {
 
         {/* FOOD SECTION */}
         <section id="food-preview">
-          <SectionHeader title="Traditional" highlight="GI Food" linkTo="/gi-food" />
+          <SectionHeader title="Traditional" highlight="GI Food" linkTo="/food" />
           {foodPreview.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               {foodPreview.map(item => <ProductCard key={item.id} item={item} />)}
