@@ -1,200 +1,100 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShieldCheck, MapPin, ShoppingBag, ArrowLeft, ArrowRight, Eye } from 'lucide-react';
-import axiosInstance from '../api/axiosInstance';
+import React from 'react';
+import { MapPin, Star, ArrowRight } from 'lucide-react';
 
-export default function ProducerShop() {
-  const { slug } = useParams();
-  const collectionRef = useRef(null);
-  
-  const [producer, setProducer] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchProducerShop = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Fetching profile metadata and products from your backend server
-        const response = await axiosInstance.get(`/api/producers/${slug}/`, {
-          signal: controller.signal
-        });
-        
-        setProducer(response.data);
-      } catch (err) {
-        if (err.name !== 'CanceledError') {
-          setError("This artisan profile or shop collection could not be found.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchProducerShop();
-    }
-
-    return () => controller.abort();
-  }, [slug]);
-
-  const handleShopNowClick = () => {
-    collectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // 1. LOADING SKELETON STATE
-  if (loading) {
-    return (
-      <div className="w-full min-h-screen bg-[#F9F7F2] py-16 px-4 sm:px-6 lg:px-8 animate-pulse space-y-12">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="h-4 w-32 bg-stone-200 rounded" />
-          <div className="h-48 bg-white border border-stone-200 rounded-xl w-full" />
-          <div className="space-y-4">
-            <div className="h-6 w-48 bg-stone-200 rounded" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map(n => (
-                <div key={n} className="h-80 bg-white border border-stone-200 rounded-lg" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+const producersData = [
+  {
+    id: 1,
+    name: "Rajbari Spice Collective",
+    specialty: "Premium Coriander (Dhonia) & Spices",
+    location: "Rajbari, Bangladesh",
+    rating: 4.9,
+    reviews: 124,
+    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80",
+    description: "A dedicated collective of local farmers specializing in high-grade, organically grown spices and herbs.",
+  },
+  {
+    id: 2,
+    name: "Tangail Weavers Guild",
+    specialty: "Handloom Sarees & Textiles",
+    location: "Tangail, Bangladesh",
+    rating: 4.8,
+    reviews: 89,
+    image: "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?auto=format&fit=crop&w=600&q=80",
+    description: "Generations of artisans crafting traditional, high-quality textiles utilizing sustainable weaving practices.",
+  },
+  {
+    id: 3,
+    name: "Sylhet Heritage Farms",
+    specialty: "Organic Black & Green Tea",
+    location: "Sylhet, Bangladesh",
+    rating: 4.7,
+    reviews: 210,
+    image: "https://images.unsplash.com/photo-1596065959546-5f75e01f609e?auto=format&fit=crop&w=600&q=80",
+    description: "Ethically sourced, hand-picked tea leaves harvested from the rolling hills and estates of Sylhet.",
   }
+];
 
-  // 2. ERROR STATE
-  if (error || !producer) {
-    return (
-      <div className="w-full min-h-screen bg-[#F9F7F2] flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-xl font-serif text-stone-800 mb-2">Shop Directory Offline</h2>
-        <p className="text-stone-500 text-sm mb-6 max-w-sm">{error || "The requested artisan shop does not exist."}</p>
-        <Link to="/producers" className="text-sm font-medium text-[#A33B26] flex items-center gap-2 border border-[#A33B26]/20 bg-white px-4 py-2 rounded-md hover:bg-[#A33B26] hover:text-white transition-colors">
-          <ArrowLeft size={16} /> Back to All Producers
-        </Link>
-      </div>
-    );
-  }
-
-  // Fallback safe defaults if backend missing properties
-  const productList = Array.isArray(producer.products) ? producer.products : [];
-
+export default function Producers() {
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F2] py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="min-h-screen bg-[#F9F7F2] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         
-        <Link to="/producers" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-[#A33B26] transition-colors">
-          <ArrowLeft size={14} /> Back to Producers
-        </Link>
-
-        {/* Dynamic Individual Profile Header */}
-        <div className="bg-white border border-stone-200 rounded-xl p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center shadow-xs">
-          <div className="w-36 h-36 rounded-full overflow-hidden flex-shrink-0 bg-stone-100 border border-stone-200 shadow-inner">
-            <img 
-              src={producer.image || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600&auto=format&fit=crop"} 
-              alt={producer.name} 
-              className="w-full h-full object-cover" 
-            />
-          </div>
-
-          <div className="flex-1 space-y-4 text-center md:text-left w-full">
-            <div>
-              <div className="flex flex-col md:flex-row md:items-center gap-3">
-                <h1 className="text-2xl md:text-3xl font-serif text-stone-900">{producer.name}</h1>
-                
-                {producer.is_verified !== false && (
-                  <span className="inline-flex items-center gap-1 bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30 text-[10px] font-sans uppercase font-medium tracking-wider px-2 py-0.5 rounded-full mx-auto md:mx-0 w-max">
-                    <ShieldCheck size={12} /> Somagom Verified Artisan
-                  </span>
-                )}
-              </div>
-              <p className="text-stone-400 font-sans tracking-wide text-xs mt-1">
-                {producer.role || "Master Artisan"} {producer.started && `• Started ${producer.started}`}
-              </p>
-            </div>
-
-            {producer.bio && (
-              <p className="text-stone-600 text-sm max-w-2xl font-light leading-relaxed">
-                "{producer.bio}"
-              </p>
-            )}
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-stone-100">
-              <div className="flex items-center justify-center md:justify-start gap-6 text-xs font-medium text-stone-700">
-                <span className="flex items-center gap-1">
-                  <MapPin size={13} className="text-stone-400" /> {producer.district || "Bangladesh"} District
-                </span>
-                <span className="flex items-center gap-1">
-                  <ShoppingBag size={13} className="text-stone-400" /> {producer.products_count || productList.length} Total Items
-                </span>
-              </div>
-
-              {productList.length > 0 && (
-                <button 
-                  onClick={handleShopNowClick}
-                  className="inline-flex items-center justify-center gap-2 bg-[#A33B26] text-white px-5 py-2.5 text-xs font-semibold tracking-wider uppercase hover:bg-[#8B3220] transition-colors rounded-md shadow-xs"
-                >
-                  <span>Shop Now</span>
-                  <ArrowRight size={12} />
-                </button>
-              )}
-            </div>
-          </div>
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4 tracking-tight">
+            Meet Our Producers
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover the dedicated artisans, farmers, and creators behind the authentic products on Somagom.
+          </p>
         </div>
 
-        {/* Dynamic Catalog Grid */}
-        <div ref={collectionRef} className="space-y-6 scroll-mt-6">
-          <h2 className="text-lg font-serif text-stone-800 border-b border-stone-200 pb-2 flex items-center justify-between">
-            <span>Exclusive Collection</span>
-            <span className="text-xs font-sans text-stone-400 font-normal">Showing {productList.length} Products</span>
-          </h2>
+        {/* Producers Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {producersData.map((producer) => (
+            <div
+              key={producer.id}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col"
+            >
+              {/* Image Container */}
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={producer.image} 
+                  alt={producer.name} 
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 text-sm font-medium text-gray-800 shadow-sm">
+                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  {producer.rating}
+                </div>
+              </div>
 
-          {productList.length === 0 ? (
-            <div className="text-center py-16 bg-white border border-stone-200/60 rounded-xl">
-              <ShoppingBag className="mx-auto text-stone-300 mb-3" size={32} />
-              <p className="text-stone-500 font-serif text-sm">No products listed in this shop collection yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {productList.map((product) => (
-                <motion.div 
-                  key={product.id}
-                  whileHover={{ y: -4 }}
-                  className="group bg-white border border-stone-200/60 rounded-lg overflow-hidden flex flex-col shadow-xs"
-                >
-                  <div className="aspect-square w-full bg-stone-100 overflow-hidden relative">
-                    <img 
-                      src={product.image || "/api-placeholder-image.jpg"} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    />
-                    <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="bg-white/90 backdrop-blur-xs text-stone-900 px-3 py-1.5 rounded text-[11px] font-medium tracking-wider uppercase shadow-xs flex items-center gap-1">
-                        <Eye size={12} /> View Details
-                      </span>
-                    </div>
-                  </div>
+              {/* Content Container */}
+              <div className="p-6 flex-grow flex flex-col">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <MapPin className="w-4 h-4" />
+                  {producer.location}
+                </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  {producer.name}
+                </h3>
+                
+                <p className="text-sm font-medium text-[#A33B26] mb-3">
+                  {producer.specialty}
+                </p>
+                
+                <p className="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">
+                  {producer.description}
+                </p>
 
-                  <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                    <h3 className="font-sans text-sm text-stone-800 font-medium line-clamp-2 group-hover:text-[#A33B26] transition-colors">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-                      <span className="text-stone-900 font-semibold text-sm">
-                        {typeof product.price === 'number' ? `৳${product.price}` : product.price}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 group-hover:text-[#A33B26] transition-colors">
-                        {product.is_available !== false ? "In Stock" : "Out of Stock"}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                <button className="w-full mt-auto flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-50 hover:bg-gray-100 text-gray-900 rounded-lg transition-colors text-sm font-medium border border-gray-200">
+                  View Storefront
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          )}
+          ))}
         </div>
 
       </div>
