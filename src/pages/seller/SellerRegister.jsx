@@ -1,5 +1,5 @@
 // pages/seller/SellerRegister.jsx
-// Multi-step seller registration — 4 steps like Daraz seller center
+
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
