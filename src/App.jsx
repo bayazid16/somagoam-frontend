@@ -24,11 +24,11 @@ import Cart from "./components/Cart";
 import PrivateRoute from "./components/PrivateRoute";
 
 // new
-import { SellerAuthProvider }  from './context/SellerAuthContext';
-import SellerPrivateRoute      from './components/SellerPrivateRoute';
-import SellerLogin             from './pages/seller/SellerLogin';
-import SellerRegister          from './pages/seller/SellerRegister';
-import SellerDashboard         from './pages/seller/SellerDashboard';
+import { SellerAuthProvider }  from "./context/SellerAuthContext";
+import SellerPrivateRoute      from "./components/SellerPrivateRoute";
+import SellerLogin             from "./pages/seller/SellerLogin";
+import SellerRegister          from "./pages/seller/SellerRegister";
+import SellerDashboard         from "./pages/seller/SellerDashboard";
  
 
 function App() {
