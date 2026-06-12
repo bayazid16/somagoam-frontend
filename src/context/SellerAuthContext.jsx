@@ -1,5 +1,5 @@
 // context/SellerAuthContext.jsx
-// Completely separate from AuthContext — uses seller_access_token
+
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../api/axiosInstance';
