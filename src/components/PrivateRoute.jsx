@@ -1,5 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useSellerAuth } from '../context/SellerAuthContext';
+ 
 
 /**
  * PrivateRoute Component
@@ -20,5 +22,18 @@ const PrivateRoute = ({ children }) => {
 
   return children;
 };
+export default function SellerPrivateRoute({ children }) {
+  const { seller, loading } = useSellerAuth();
+ 
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-[#A33B26] animate-pulse font-serif">Loading...</div>
+    </div>
+  );
+ 
+  if (!seller) return <Navigate to="/seller/login" replace />;
+ 
+  return children;
+}
 
 export default PrivateRoute;
