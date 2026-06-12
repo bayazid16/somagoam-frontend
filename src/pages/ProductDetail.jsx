@@ -13,6 +13,11 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
+  // NEW: State for handling reviews
+  const [newRating, setNewRating] = useState(5);
+  const [newComment, setNewComment] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
@@ -26,6 +31,35 @@ export default function ProductDetail() {
     };
     fetchProductDetails();
   }, [slug]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setIsSubmittingReview(true);
+    try {
+      // Send the review to the backend
+      const response = await axiosInstance.post(`/api/reviews/${product.id}/`, {
+        rating: newRating,
+        comment: newComment
+      });
+
+      // Update the UI immediately with the new review
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        reviews: [response.data, ...(prevProduct.reviews || [])]
+      }));
+
+      // Clear the form
+      setNewComment('');
+      setNewRating(5);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review. Make sure you are logged in!");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (product) {
@@ -206,10 +240,49 @@ export default function ProductDetail() {
             </p>
           </div>
 
+          {/* NEW: Leave a Review Form */}
+          <div className="bg-white border border-stone-200 p-6 rounded-sm shadow-sm mb-10">
+            <h3 className="font-bold text-stone-900 mb-4 uppercase tracking-widest text-xs">Leave a Review</h3>
+            <form onSubmit={handleReviewSubmit} className="space-y-4">
+              
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-stone-500 uppercase tracking-widest">Rating:</span>
+                <div className="flex text-[#A33B26] cursor-pointer">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star 
+                      key={star} 
+                      size={18} 
+                      onClick={() => setNewRating(star)}
+                      fill={star <= newRating ? "currentColor" : "none"} 
+                      className="transition-colors hover:fill-current"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Share your authentic experience with this heritage item..."
+                className="w-full border border-stone-200 p-3 text-sm outline-none focus:border-[#A33B26] rounded-sm min-h-[100px]"
+                required
+              />
+
+              <button 
+                type="submit" 
+                disabled={isSubmittingReview}
+                className="brand-bg text-white px-6 py-2 text-[10px] uppercase font-bold tracking-widest hover:opacity-90 transition disabled:opacity-50"
+              >
+                {isSubmittingReview ? 'Submitting...' : 'Post Review'}
+              </button>
+            </form>
+          </div>
+
+          {/* Existing Reviews Display */}
           {product.reviews && product.reviews.length > 0 ? (
             <div className="space-y-6">
               {product.reviews.map((rev) => (
-                <div key={rev.id} className="bg-white border border-stone-200 p-6 rounded-sm shadow-sm">
+                <div key={rev.id || rev.created_at} className="bg-white border border-stone-200 p-6 rounded-sm shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex text-[#A33B26] mb-1">
