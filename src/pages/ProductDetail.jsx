@@ -55,7 +55,7 @@ export default function ProductDetail() {
       setNewRating(5);
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("Failed to submit review. Make sure you are logged in!");
+      alert("Failed to submit review. Make sure you are logged in and A Verified Buyer!");
     } finally {
       setIsSubmittingReview(false);
     }
