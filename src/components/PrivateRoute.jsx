@@ -15,7 +15,7 @@ const PrivateRoute = ({ children }) => {
   if (!token&&!user) {
     // Redirect them to the /login page, but save the current location they 
     // were trying to go to. This allows you to send them back there 
-    // after they login.
+    
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
