@@ -1,5 +1,5 @@
 // pages/seller/SellerLogin.jsx
-// Completely separate seller login page — /seller/login
+
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
