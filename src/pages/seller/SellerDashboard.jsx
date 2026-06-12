@@ -1,5 +1,5 @@
 // pages/seller/SellerDashboard.jsx
-// Full Daraz-like seller dashboard with sidebar navigation
+
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
