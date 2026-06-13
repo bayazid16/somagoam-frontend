@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Truck, ShieldCheck } from 'lucide-react';
+import { Truck, ShieldCheck } from 'lucide-react'; // Removed CreditCard
 import axiosInstance from '../api/axiosInstance';
 import { useCart } from '../context/CartContext';
 
@@ -8,7 +8,6 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, cartTotal } = useCart();
   const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState('bkash');
   const [loading, setLoading] = useState(false);
   const [paymentError, setPaymentError] = useState('');
 
@@ -56,21 +55,14 @@ export default function Checkout() {
     setPaymentError('');
 
     try {
-      const checkoutRes = await axiosInstance.post('/api/cart/checkout/', {
+      // 1. Create the order
+      await axiosInstance.post('/api/cart/checkout/', {
         address: `${formData.fullName}, ${formData.phone}, ${formData.address}, ${formData.city}`,
-      });
-      const orderId = checkoutRes.data.order_id;
-
-      const paymentRes = await axiosInstance.post('/api/payment/initiate-payment/', {
-        order_id: orderId,
+        payment_method: 'cod' // Optional: Let the backend know it's COD
       });
 
-      const redirectUrl = paymentRes.data.payment_url;
-      if (redirectUrl) {
-        window.location.href = redirectUrl;
-      } else {
-        setPaymentError("Payment gateway did not return a URL. Please try again.");
-      }
+      // 2. Redirect to a success page since no online payment is needed
+      navigate('/success'); // Change '/success' to whatever your success route is
 
     } catch (error) {
       const serverError = error.response?.data?.error;
@@ -158,30 +150,22 @@ export default function Checkout() {
           ) : (
             <div className="space-y-8 animate-in fade-in duration-500">
               <h2 className="serif text-3xl">Payment Method</h2>
+              
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {['bkash', 'nagad', 'card'].map((method) => (
-                  <div
-                    key={method}
-                    onClick={() => setPaymentMethod(method)}
-                    className={`p-6 border cursor-pointer transition-all ${paymentMethod === method ? 'border-[#A33B26] bg-white shadow-md' : 'border-stone-200 grayscale opacity-60'}`}
-                  >
-                    <div className="h-8 mb-4 flex items-center justify-center">
-                      {method === 'bkash' && <span className="font-bold text-pink-600">bKash</span>}
-                      {method === 'nagad' && <span className="font-bold text-orange-500">Nagad</span>}
-                      {method === 'card' && <CreditCard className="text-stone-600" />}
-                    </div>
-                    <p className="text-[10px] uppercase tracking-tighter text-center font-bold">{method}</p>
+                {/* Single Option for COD */}
+                <div className="p-6 border border-[#A33B26] bg-white shadow-md cursor-default">
+                  <div className="h-8 mb-4 flex items-center justify-center">
+                    <span className="font-bold text-stone-800">COD</span>
                   </div>
-                ))}
+                  <p className="text-[10px] uppercase tracking-tighter text-center font-bold">Cash on Delivery</p>
+                </div>
               </div>
 
-              <div className="bg-white p-8 border border-stone-200 shadow-sm">
-                <h4 className="font-bold text-sm mb-4">Pay via {paymentMethod.toUpperCase()}</h4>
+              <div className="bg-white p-8 border border-stone-200 shadow-sm mt-4">
+                <h4 className="font-bold text-sm mb-4">Pay via Cash on Delivery</h4>
                 <p className="text-stone-500 text-xs mb-6 leading-relaxed">
-                  Upon clicking the button below, you will be redirected to the secure{' '}
-                  <span className="font-bold text-stone-700">SSLCommerz</span> gateway to complete
-                  your transaction of{' '}
-                  <span className="font-bold text-stone-700">৳{total.toLocaleString()}</span>.
+                  You will pay the delivery agent in cash when your order of{' '}
+                  <span className="font-bold text-stone-700">৳{total.toLocaleString()}</span> arrives at your door.
                 </p>
 
                 {paymentError && (
@@ -197,9 +181,9 @@ export default function Checkout() {
                   className="w-full brand-bg text-white py-4 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                 >
                   {loading ? (
-                    <span className="animate-pulse">Redirecting to Secure Gateway...</span>
+                    <span className="animate-pulse">Placing Order...</span>
                   ) : (
-                    <><ShieldCheck size={16} /> Pay ৳{total.toLocaleString()}</>
+                    <><ShieldCheck size={16} /> Confirm Order ৳{total.toLocaleString()}</>
                   )}
                 </button>
               </div>
