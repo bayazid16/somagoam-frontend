@@ -22,8 +22,8 @@ export default function SellerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [stats,         setStats]         = useState(null);
-  const [sidebarOpen,   setSidebarOpen]   = useState(false);
+  const [stats,          setStats]        = useState(null);
+  const [sidebarOpen,    setSidebarOpen]  = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -82,10 +82,11 @@ export default function SellerDashboard() {
       <aside className={`
         fixed top-0 left-0 h-full w-[240px] bg-white border-r border-gray-100 z-50
         transform transition-transform duration-300 lg:relative lg:translate-x-0 lg:z-auto
+        flex flex-col
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Logo */}
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="p-5 border-b border-gray-100 flex items-center justify-between shrink-0">
           <Link to="/" className="border border-[#A33B26] px-3 py-1">
             <span className="text-[#A33B26] text-sm font-bold tracking-[0.2em] uppercase">SOMAGOAM</span>
           </Link>
@@ -95,7 +96,7 @@ export default function SellerDashboard() {
         </div>
 
         {/* Seller info */}
-        <div className="p-5 border-b border-gray-100">
+        <div className="p-5 border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#A33B26] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
               {seller?.company_name?.charAt(0)}
@@ -118,7 +119,7 @@ export default function SellerDashboard() {
         </div>
 
         {/* Nav links */}
-        <nav className="p-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {NAV.map(({ path, label, icon: Icon }) => (
             <Link key={path} to={path}
               onClick={() => setSidebarOpen(false)}
@@ -135,7 +136,7 @@ export default function SellerDashboard() {
         </nav>
 
         {/* Logout */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 shrink-0 bg-white">
           <button onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded text-sm text-red-500 hover:bg-red-50 transition-colors">
             <LogOut size={18} />
@@ -186,10 +187,10 @@ export default function SellerDashboard() {
               {/* Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {[
-                  { label: 'Total Products', value: stats?.total_products ?? '—', icon: Package,     color: 'text-blue-500',      bg: 'bg-blue-50'  },
-                  { label: 'Total Orders',   value: stats?.total_sales    ?? '—', icon: ShoppingBag, color: 'text-green-500',     bg: 'bg-green-50' },
+                  { label: 'Total Products', value: stats?.total_products ?? '—', icon: Package,     color: 'text-blue-500',     bg: 'bg-blue-50'  },
+                  { label: 'Total Orders',   value: stats?.total_sales    ?? '—', icon: ShoppingBag, color: 'text-green-500',    bg: 'bg-green-50' },
                   { label: 'Total Revenue',  value: stats ? `৳${stats.total_revenue}` : '—', icon: TrendingUp, color: 'text-[#A33B26]', bg: 'bg-red-50' },
-                  { label: 'Rating',         value: stats?.rating         ?? '—', icon: Store,       color: 'text-amber-500',     bg: 'bg-amber-50' },
+                  { label: 'Rating',         value: stats?.rating         ?? '—', icon: Store,       color: 'text-amber-500',    bg: 'bg-amber-50' },
                 ].map(({ label, value, icon: Icon, color, bg }) => (
                   <div key={label} className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
                     <div className={`w-10 h-10 ${bg} rounded-lg flex items-center justify-center mb-3`}>
