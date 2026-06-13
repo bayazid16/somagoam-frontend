@@ -45,13 +45,19 @@ export default function SellerProducts() {
   };
 
   const fetchCategories = async () => {
-    try {
-      const res = await axiosInstance.get('/api/products/categories/');
-      setCategories(res.data.results ?? res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const res = await axiosInstance.get('/api/categories/');
+    setCategories(res.data);
+  } catch (err) {
+    console.error('Category fetch failed:', err);
+    // Fallback
+    setCategories([
+      { id: 2, name: 'Food' },
+      { id: 3, name: 'Fashion' },
+      { id: 4, name: 'Crafts' },
+    ]);
+  }
+};
 
   // ── Image preview ─────────────────────────────────────────────────────────
   const handleImageChange = (e) => {
