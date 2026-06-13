@@ -1,21 +1,23 @@
+// pages/ProductDetail.jsx
+// Added seller card section — click seller name → SellerStore page
+
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingBag, CreditCard, Star, ShieldCheck } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ShoppingBag, CreditCard, Star, MapPin, Package, ShoppingCart } from 'lucide-react';
 import axiosInstance from '../api/axiosInstance';
 import { useCart } from '../context/CartContext';
 
 export default function ProductDetail() {
-  const { slug } = useParams();
-  const navigate = useNavigate();
+  const { slug }     = useParams();
+  const navigate     = useNavigate();
   const { addToCart } = useCart();
-  
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const [product,  setProduct]  = useState(null);
+  const [loading,  setLoading]  = useState(true);
   const [quantity, setQuantity] = useState(1);
 
-  // NEW: State for handling reviews
-  const [newRating, setNewRating] = useState(5);
-  const [newComment, setNewComment] = useState('');
+  const [newRating,          setNewRating]          = useState(5);
+  const [newComment,         setNewComment]         = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   useEffect(() => {
@@ -35,27 +37,19 @@ export default function ProductDetail() {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
     setIsSubmittingReview(true);
     try {
-      // Send the review to the backend
       const response = await axiosInstance.post(`/api/reviews/${product.id}/`, {
-        rating: newRating,
-        comment: newComment
+        rating: newRating, comment: newComment
       });
-
-      // Update the UI immediately with the new review
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        reviews: [response.data, ...(prevProduct.reviews || [])]
+      setProduct(prev => ({
+        ...prev,
+        reviews: [response.data, ...(prev.reviews || [])]
       }));
-
-      // Clear the form
       setNewComment('');
       setNewRating(5);
     } catch (error) {
-      console.error("Error submitting review:", error);
-      alert("Failed to submit review. Make sure you are logged in and A Verified Buyer!");
+      alert("Failed to submit review. Make sure you are logged in and a Verified Buyer!");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -64,20 +58,16 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (product) {
       addToCart({
-        id: product.id,
-        name: product.name,
+        id: product.id, name: product.name,
         price: parseFloat(product.price),
         image: product.image,
         region: product.origin_district || product.region,
-        quantity: quantity
+        quantity,
       });
     }
   };
 
-  const handleBuyNow = () => {
-    handleAddToCart();
-    navigate('/checkout');
-  };
+  const handleBuyNow = () => { handleAddToCart(); navigate('/checkout'); };
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#F9F7F2]">
@@ -103,11 +93,11 @@ export default function ProductDetail() {
 
       <div className="px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
 
-        {/* Left: Image Gallery */}
+        {/* Left: Image */}
         <div className="lg:col-span-7 space-y-4">
           <div className="aspect-[4/5] bg-stone-200 overflow-hidden rounded-sm">
             <img
-              src={product.image || `https://images.unsplash.com/photo-1615886753866-79396abc446e?q=80&w=687&auto=format&fit=crop`}
+              src={product.image || 'https://images.unsplash.com/photo-1615886753866-79396abc446e?q=80&w=687'}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -130,12 +120,9 @@ export default function ProductDetail() {
             </span>
 
             <h1 className="text-4xl md:text-5xl serif mt-2 mb-4">{product.name}</h1>
-
-            {/* ✅ price */}
             <p className="text-2xl font-light mb-4">৳ {parseFloat(product.price).toLocaleString()}</p>
 
-            {/* ✅ rating */}
-            <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-2 mb-6">
               <div className="flex text-[#A33B26]">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={14} fill={i < Math.round(product.average_rating || 0) ? "currentColor" : "none"} />
@@ -145,6 +132,60 @@ export default function ProductDetail() {
                 ({product.average_rating || 0}) · {product.reviews?.length || 0} reviews
               </span>
             </div>
+
+            {/* ── NEW: Seller Card ──────────────────────────────────────── */}
+            {product.seller && (
+              <Link
+                to={`/producers/${product.seller.slug}`}
+                className="flex items-center gap-3 bg-white border border-stone-100 hover:border-[#A33B26] p-3 mb-6 transition-all group"
+              >
+                {/* Logo */}
+                <div className="w-11 h-11 rounded-full overflow-hidden bg-stone-100 flex-shrink-0 border border-stone-200">
+                  {product.seller.logo ? (
+                    <img
+                      src={product.seller.logo}
+                      alt={product.seller.company_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#A33B26] flex items-center justify-center text-white font-bold">
+                      {product.seller.company_name?.charAt(0)}
+                    </div>
+                  )}
+                </div>
+
+                {/* Seller info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] text-stone-400 uppercase tracking-widest mb-0.5">Sold by</p>
+                  <p className="text-sm font-bold text-stone-800 group-hover:text-[#A33B26] transition-colors truncate">
+                    {product.seller.company_name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {product.seller.district && (
+                      <span className="flex items-center gap-0.5 text-[9px] text-stone-400">
+                        <MapPin size={8} />
+                        {product.seller.district}
+                      </span>
+                    )}
+                    {product.seller.rating > 0 && (
+                      <span className="flex items-center gap-0.5 text-[9px] text-[#A33B26] font-bold">
+                        <Star size={8} fill="currentColor" />
+                        {parseFloat(product.seller.rating).toFixed(1)}
+                      </span>
+                    )}
+                    <span className="text-[9px] text-stone-400">
+                      {product.seller.total_products} products
+                    </span>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <span className="text-[10px] text-stone-300 group-hover:text-[#A33B26] font-bold transition-colors">
+                  View Store →
+                </span>
+              </Link>
+            )}
+            {/* ── End Seller Card ───────────────────────────────────────── */}
 
             <div className="space-y-6 text-stone-600 text-sm leading-relaxed mb-10">
               <p>{product.description}</p>
@@ -158,11 +199,8 @@ export default function ProductDetail() {
               </ul>
             </div>
 
-            {/* ✅ stock warning */}
             {product.stock <= 0 && (
-              <p className="text-red-500 text-xs font-bold uppercase tracking-widest mb-4">
-                Out of Stock
-              </p>
+              <p className="text-red-500 text-xs font-bold uppercase tracking-widest mb-4">Out of Stock</p>
             )}
 
             <div className="space-y-4 mb-8">
@@ -172,22 +210,18 @@ export default function ProductDetail() {
                   <span className="px-4 font-bold min-w-[40px] text-center">{quantity}</span>
                   <button onClick={() => setQuantity(q => q + 1)} className="px-2 hover:text-[#A33B26]">+</button>
                 </div>
-
-                {/* ✅ disabled if out of stock */}
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
-                  className="flex-grow border border-stone-900 text-stone-900 font-bold uppercase tracking-widest text-xs py-4 hover:bg-stone-900 hover:text-white transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-grow border border-stone-900 text-stone-900 font-bold uppercase tracking-widest text-xs py-4 hover:bg-stone-900 hover:text-white transition flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <ShoppingBag className="w-4 h-4" /> Add to Bag
                 </button>
               </div>
-
-              {/* ✅ disabled if out of stock */}
               <button
                 onClick={handleBuyNow}
                 disabled={product.stock <= 0}
-                className="w-full brand-bg text-white font-bold uppercase tracking-widest text-xs py-5 hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full brand-bg text-white font-bold uppercase tracking-widest text-xs py-5 hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
               >
                 <CreditCard className="w-4 h-4" /> Buy Now & Support Heritage
               </button>
@@ -209,7 +243,8 @@ export default function ProductDetail() {
                 <div>
                   <h4 className="font-bold text-[11px] uppercase tracking-wider mb-1">Meet the Artisan</h4>
                   <p className="text-[12px] text-stone-500">
-                    {product.artisan_name || 'Master Artisan'}, from {product.origin_district || 'the heritage hub'}.
+                    {product.seller?.company_name || product.artisan_name || 'Master Artisan'},
+                    from {product.seller?.district || product.origin_district || 'the heritage hub'}.
                   </p>
                 </div>
               </div>
@@ -230,55 +265,40 @@ export default function ProductDetail() {
 
       <hr className="border-stone-200 mx-6 md:mx-10" />
 
-      {/* ✅ Reviews Section */}
+      {/* Reviews Section */}
       <div className="py-16 px-6 md:px-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl serif mb-4 text-stone-900">Heritage Voices</h2>
-            <p className="text-[#A33B26] uppercase tracking-[0.2em] text-[10px] font-bold">
-              Authentic Experiences
-            </p>
+            <p className="text-[#A33B26] uppercase tracking-[0.2em] text-[10px] font-bold">Authentic Experiences</p>
           </div>
 
-          {/* NEW: Leave a Review Form */}
           <div className="bg-white border border-stone-200 p-6 rounded-sm shadow-sm mb-10">
             <h3 className="font-bold text-stone-900 mb-4 uppercase tracking-widest text-xs">Leave a Review</h3>
             <form onSubmit={handleReviewSubmit} className="space-y-4">
-              
               <div className="flex items-center gap-2">
                 <span className="text-xs text-stone-500 uppercase tracking-widest">Rating:</span>
                 <div className="flex text-[#A33B26] cursor-pointer">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star 
-                      key={star} 
-                      size={18} 
-                      onClick={() => setNewRating(star)}
-                      fill={star <= newRating ? "currentColor" : "none"} 
-                      className="transition-colors hover:fill-current"
-                    />
+                    <Star key={star} size={18} onClick={() => setNewRating(star)}
+                      fill={star <= newRating ? "currentColor" : "none"}
+                      className="transition-colors hover:fill-current" />
                   ))}
                 </div>
               </div>
-
               <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Share your authentic experience with this heritage item..."
+                value={newComment} onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Share your authentic experience..."
                 className="w-full border border-stone-200 p-3 text-sm outline-none focus:border-[#A33B26] rounded-sm min-h-[100px]"
                 required
               />
-
-              <button 
-                type="submit" 
-                disabled={isSubmittingReview}
-                className="brand-bg text-white px-6 py-2 text-[10px] uppercase font-bold tracking-widest hover:opacity-90 transition disabled:opacity-50"
-              >
+              <button type="submit" disabled={isSubmittingReview}
+                className="brand-bg text-white px-6 py-2 text-[10px] uppercase font-bold tracking-widest hover:opacity-90 disabled:opacity-50">
                 {isSubmittingReview ? 'Submitting...' : 'Post Review'}
               </button>
             </form>
           </div>
 
-          {/* Existing Reviews Display */}
           {product.reviews && product.reviews.length > 0 ? (
             <div className="space-y-6">
               {product.reviews.map((rev) => (
@@ -291,9 +311,7 @@ export default function ProductDetail() {
                         ))}
                       </div>
                       <h4 className="font-bold text-stone-900">{rev.user}</h4>
-                      <p className="text-[10px] text-stone-400 uppercase tracking-widest">
-                        {rev.created_at}
-                      </p>
+                      <p className="text-[10px] text-stone-400 uppercase tracking-widest">{rev.created_at}</p>
                     </div>
                   </div>
                   <p className="text-stone-600 italic text-sm">"{rev.comment}"</p>
@@ -307,7 +325,6 @@ export default function ProductDetail() {
           )}
         </div>
       </div>
-
     </div>
   );
 }
