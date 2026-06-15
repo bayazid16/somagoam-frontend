@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useSellerAuth } from '../../context/SellerAuthContext';
 import { Plus, Trash2, Package, X } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
+import sellerAxios from '../../api/sellerAxiosInstance';
 
 export default function SellerProducts() {
   const { seller, sellerAxios } = useSellerAuth();
